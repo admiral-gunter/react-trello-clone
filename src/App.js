@@ -133,165 +133,72 @@ function App() {
 
   const AddTaskBtnStyle = { fontWeight: 'bold', fontSize: '24px', cursor: 'pointer' }
 
+  const statusTasks = [{ 'bg': 'white', 'sts': 'TODO' }, { 'bg': 'lightblue', 'sts': 'IN_PROGRESS' }, { 'bg': 'palegreen', 'sts': 'DONE' }, { 'bg': 'pink', 'sts': 'BACKLOG' }]
+
   const TaskStyle = { background: 'white', padding: '10px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', margin: '15px' }
+  const [hoveredIndex, setHoveredIndex] = useState(null);
   return (
     <div className="App">
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <div
-          style={{ background: 'white', width: '20%', height: '100vh', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', }}
-          onDragOver={handleDragOver}
-          onDrop={(e) => handleDrop(e, "TODO")}
-          id="TODO"
-        >
-          {dataTasks.TODO.map((item, index) => (
 
-            <div
-              key={index}
-              style={TaskStyle}
-              draggable
-              onDragStart={(e) => handleDragStart(e, item, "TODO", index)}
+
+        {
+          statusTasks.map((itemSts, idxSts) => {
+            return (<div
+              style={{ background: itemSts.bg, width: '20%', height: '100vh', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' }}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, itemSts.sts)}
+              id={itemSts.sts}
+              key={idxSts}
+              onMouseEnter={() => setHoveredIndex(idxSts)}
+              onMouseLeave={() => setHoveredIndex(null)}
+
             >
-              <input onChange={(e) => chgTitle(e.target.value, "TODO", index)} value={item.title} />
+              {dataTasks[itemSts.sts].map((item, index) => (
 
-              <div>
-                <span
-                  onClick={() => datepickerRef.current.setOpen(true)}
-                  style={{ cursor: "pointer", textDecoration: "underline" }}
+                <div
+                  key={index}
+                  style={TaskStyle}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, item, itemSts.sts, index)}
                 >
-                  {formattedDate}
-                </span>
+                  <input onChange={(e) => chgTitle(e.target.value, itemSts.sts, index)} value={item.title} />
 
-                <DatePicker
-                  selected={item.duedt}
-                  onChange={(date) => setSelectedDate(date)}
-                  dateFormat="MMMM dd"
-                  ref={datepickerRef} // Use ref instead of document.getElementById
-                  customInput={<></>} // Hide native input field
-                />
-              </div>
-            </div>
-          ))}
+                  <div>
+                    <span
+                      onClick={() => datepickerRef.current.setOpen(true)}
+                      style={{ cursor: "pointer", textDecoration: "underline" }}
+                    >
+                      {formattedDate}
+                    </span>
 
+                    <DatePicker
+                      selected={item.duedt}
+                      onChange={(date) => {
+                        const updatedTasks = dataTasks[itemSts.sts].map((task, i) =>
+                          i === index ? { ...task, duedt: new Date(date) } : task
+                        );
 
-          <span style={AddTaskBtnStyle} onClick={(e) => createNewTask(e, "TODO")}>+</span>
-        </div>
-
-        <div
-          style={{ background: 'lightblue', width: '20%', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' }}
-          onDragOver={handleDragOver}
-          onDrop={(e) => handleDrop(e, "IN_PROGRESS")}
-          id="IN-PROGRESS"
-        >
-          {dataTasks.IN_PROGRESS.map((item, index) => (
-            // Each child in a list should have a unique "key" prop
-            // <li key={index}>{item}</li>
-            <div
-              key={index}
-              style={TaskStyle}
-              draggable
-              onDragStart={(e) => handleDragStart(e, item, "IN_PROGRESS", index)}
-            >
-              <input onChange={(e) => chgTitle(e.target.value, "IN_PROGRESS", index)} value={item.title} />
+                        setdataTasks({
+                          ...dataTasks,
+                          [itemSts.sts]: updatedTasks
+                        });
+                      }}
+                      dateFormat="MMMM dd"
+                      ref={datepickerRef} // Use ref instead of document.getElementById
+                      customInput={<></>} // Hide native input field
+                    />
+                  </div>
+                </div>
+              ))}
 
 
-              <div>
-                <span
-                  onClick={() => datepickerRef.current.setOpen(true)}
-                  style={{ cursor: "pointer", textDecoration: "underline" }}
-                >
-                  {formattedDate}
-                </span>
-
-                <DatePicker
-                  selected={item.duedt}
-                  onChange={(date) => setSelectedDate(date)}
-                  dateFormat="MMMM dd"
-                  ref={datepickerRef} // Use ref instead of document.getElementById
-                  customInput={<></>} // Hide native input field
-                />
-              </div>
-            </div>
-          ))}
-
-          <span style={AddTaskBtnStyle} onClick={(e) => createNewTask(e, "IN_PROGRESS")}>+</span>
-        </div>
-
-        <div
-          style={{ background: 'palegreen', width: '20%', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)' }}
-          onDragOver={handleDragOver}
-          onDrop={(e) => handleDrop(e, "DONE")}
-          id="DONE"
-        >
-          {dataTasks.DONE.map((item, index) => (
-            // Each child in a list should have a unique "key" prop
-            // <li key={index}>{item}</li>
-            <div
-              key={index}
-              style={TaskStyle}
-              draggable
-              onDragStart={(e) => handleDragStart(e, item, "DONE", index)}
-            >
-              <input onChange={(e) => chgTitle(e.target.value, "DONE", index)} value={item.title} />
-
-
-              <div>
-                <span
-                  onClick={() => datepickerRef.current.setOpen(true)}
-                  style={{ cursor: "pointer", textDecoration: "underline" }}
-                >
-                  {formattedDate}
-                </span>
-
-                <DatePicker
-                  selected={item.duedt}
-                  onChange={(date) => setSelectedDate(date)}
-                  dateFormat="MMMM dd"
-                  ref={datepickerRef} // Use ref instead of document.getElementById
-                  customInput={<></>} // Hide native input field
-                />
-              </div>
-            </div>
-          ))}
-
-          <span style={AddTaskBtnStyle} onClick={(e) => createNewTask(e, "DONE")}>+</span>
-        </div>
-
-        <div
-          style={{ background: 'pink', width: '20%' }}
-          onDragOver={handleDragOver}
-          onDrop={(e) => handleDrop(e, "BACKLOG")}
-        >
-          {dataTasks.BACKLOG.map((item, index) => (
-            // Each child in a list should have a unique "key" prop
-            // <li key={index}>{item}</li>
-            <div
-              key={index}
-              style={TaskStyle}
-              draggable
-              onDragStart={(e) => handleDragStart(e, item, "BACKLOG", index)}
-            >
-              <input onChange={(e) => chgTitle(e.target.value, "BACKLOG", index)} value={item.title} />
-
-              <div>
-                <span
-                  onClick={() => datepickerRef.current.setOpen(true)}
-                  style={{ cursor: "pointer", textDecoration: "underline" }}
-                >
-                  {formattedDate}
-                </span>
-
-                <DatePicker
-                  selected={item.duedt}
-                  onChange={(date) => setSelectedDate(date)}
-                  dateFormat="MMMM dd"
-                  ref={datepickerRef} // Use ref instead of document.getElementById
-                  customInput={<></>} // Hide native input field
-                />
-              </div>
-            </div>
-          ))}
-          <span style={AddTaskBtnStyle} onClick={(e) => createNewTask(e, "BACKLOG")}>+</span>
-        </div>
+              {hoveredIndex === idxSts && (
+                <span style={AddTaskBtnStyle} onClick={(e) => createNewTask(e, itemSts.sts)}>+ <span style={{ fontSize: 'small' }}>add task</span> </span>
+              )}
+            </div>);
+          })
+        }
       </div>
     </div>
   );
