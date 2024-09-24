@@ -1,14 +1,24 @@
 import logo from './logo.svg';
 import './App.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import DatePicker from "react-datepicker";
+import { format } from "date-fns";
+import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
+
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const datepickerRef = useRef(null);
+
+  // Format date as "MONTH NAME DATE"
+  const formattedDate = format(selectedDate, "MMMM dd");
 
   const [dataTasks, setdataTasks] = useState({
     "TODO": [{
       "id": 1,
       "title": "doing",
-      "ket": "something something"
+      "ket": "something something",
+      "duedt": new Date()
     }],
     "IN_PROGRESS": [],
     "DONE": [],
@@ -134,8 +144,7 @@ function App() {
           id="TODO"
         >
           {dataTasks.TODO.map((item, index) => (
-            // Each child in a list should have a unique "key" prop
-            // <li key={index}>{item}</li>
+
             <div
               key={index}
               style={TaskStyle}
@@ -144,7 +153,22 @@ function App() {
             >
               <input onChange={(e) => chgTitle(e.target.value, "TODO", index)} value={item.title} />
 
+              <div>
+                <span
+                  onClick={() => datepickerRef.current.setOpen(true)}
+                  style={{ cursor: "pointer", textDecoration: "underline" }}
+                >
+                  {formattedDate}
+                </span>
 
+                <DatePicker
+                  selected={item.duedt}
+                  onChange={(date) => setSelectedDate(date)}
+                  dateFormat="MMMM dd"
+                  ref={datepickerRef} // Use ref instead of document.getElementById
+                  customInput={<></>} // Hide native input field
+                />
+              </div>
             </div>
           ))}
 
@@ -168,6 +192,24 @@ function App() {
               onDragStart={(e) => handleDragStart(e, item, "IN_PROGRESS", index)}
             >
               <input onChange={(e) => chgTitle(e.target.value, "IN_PROGRESS", index)} value={item.title} />
+
+
+              <div>
+                <span
+                  onClick={() => datepickerRef.current.setOpen(true)}
+                  style={{ cursor: "pointer", textDecoration: "underline" }}
+                >
+                  {formattedDate}
+                </span>
+
+                <DatePicker
+                  selected={item.duedt}
+                  onChange={(date) => setSelectedDate(date)}
+                  dateFormat="MMMM dd"
+                  ref={datepickerRef} // Use ref instead of document.getElementById
+                  customInput={<></>} // Hide native input field
+                />
+              </div>
             </div>
           ))}
 
@@ -190,6 +232,24 @@ function App() {
               onDragStart={(e) => handleDragStart(e, item, "DONE", index)}
             >
               <input onChange={(e) => chgTitle(e.target.value, "DONE", index)} value={item.title} />
+
+
+              <div>
+                <span
+                  onClick={() => datepickerRef.current.setOpen(true)}
+                  style={{ cursor: "pointer", textDecoration: "underline" }}
+                >
+                  {formattedDate}
+                </span>
+
+                <DatePicker
+                  selected={item.duedt}
+                  onChange={(date) => setSelectedDate(date)}
+                  dateFormat="MMMM dd"
+                  ref={datepickerRef} // Use ref instead of document.getElementById
+                  customInput={<></>} // Hide native input field
+                />
+              </div>
             </div>
           ))}
 
@@ -211,6 +271,23 @@ function App() {
               onDragStart={(e) => handleDragStart(e, item, "BACKLOG", index)}
             >
               <input onChange={(e) => chgTitle(e.target.value, "BACKLOG", index)} value={item.title} />
+
+              <div>
+                <span
+                  onClick={() => datepickerRef.current.setOpen(true)}
+                  style={{ cursor: "pointer", textDecoration: "underline" }}
+                >
+                  {formattedDate}
+                </span>
+
+                <DatePicker
+                  selected={item.duedt}
+                  onChange={(date) => setSelectedDate(date)}
+                  dateFormat="MMMM dd"
+                  ref={datepickerRef} // Use ref instead of document.getElementById
+                  customInput={<></>} // Hide native input field
+                />
+              </div>
             </div>
           ))}
           <span style={AddTaskBtnStyle} onClick={(e) => createNewTask(e, "BACKLOG")}>+</span>
