@@ -110,7 +110,7 @@ function App() {
       "id": generateUniqueID(),
       "title": "",
       "ket": "",
-      "duedt": null,
+      "duedt": new Date(),
       "created_dt": formatDate(now),
       "changed_dt": formatDate(now),
     });
@@ -135,8 +135,12 @@ function App() {
 
   const statusTasks = [{ 'bg': 'white', 'sts': 'TODO' }, { 'bg': 'lightblue', 'sts': 'IN_PROGRESS' }, { 'bg': 'palegreen', 'sts': 'DONE' }, { 'bg': 'pink', 'sts': 'BACKLOG' }]
 
-  const TaskStyle = { background: 'white', padding: '10px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', margin: '15px' }
+  const TaskStyle = { background: 'white', padding: '10px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', margin: '15px', position: 'relative' }
+
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const [taskHoveredIndex, setTaskHoveredIndex] = useState(null);
+  const [delTaskIdx, setDelTaskIdx] = useState(null);
+  const [deletingTask, setDeletingTask] = useState(null);
   return (
     <div className="App">
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -157,11 +161,40 @@ function App() {
               {dataTasks[itemSts.sts].map((item, index) => (
 
                 <div
+                  className={deletingTask === index ? 'fade-out' : 'fade-in'}
                   key={index}
                   style={TaskStyle}
                   draggable
                   onDragStart={(e) => handleDragStart(e, item, itemSts.sts, index)}
+                  onMouseEnter={() => setTaskHoveredIndex(index)}
+                  onMouseLeave={() => setTaskHoveredIndex(null)}
                 >
+                  {taskHoveredIndex === index && (
+                    <span
+                      onMouseEnter={() => setDelTaskIdx(index)}
+                      onMouseLeave={() => setDelTaskIdx(null)} style={{ zIndex: '2', position: 'absolute', right: 5, top: 0 }}
+                      onClick={(e) => {
+                        setDeletingTask(index);
+
+
+                        setTimeout(() => {
+                          const newdataTasks = { ...dataTasks };
+
+                          // Remove the element from the original array
+                          newdataTasks[itemSts.sts].splice(index, 1);
+
+                          setdataTasks(newdataTasks)
+                          setDeletingTask(null);
+                        }, 500);
+
+
+
+
+                      }}
+                    >
+                      <span style={{ fontSize: 'small', fontWeight: 'bold', color: 'red', cursor: 'pointer', fontSize: delTaskIdx == index ? 'medium' : 'small' }}>Delete</span>
+                    </span>
+                  )}
                   <input onChange={(e) => chgTitle(e.target.value, itemSts.sts, index)} value={item.title} />
 
                   <div>
@@ -169,24 +202,21 @@ function App() {
                       onClick={() => datepickerRef.current.setOpen(true)}
                       style={{ cursor: "pointer", textDecoration: "underline" }}
                     >
-                      {formattedDate}
+                      {format(item.duedt, "MMMM dd")}
                     </span>
 
                     <DatePicker
                       selected={item.duedt}
                       onChange={(date) => {
-                        const updatedTasks = dataTasks[itemSts.sts].map((task, i) =>
-                          i === index ? { ...task, duedt: new Date(date) } : task
-                        );
+                        const newdataTasks = { ...dataTasks };
 
-                        setdataTasks({
-                          ...dataTasks,
-                          [itemSts.sts]: updatedTasks
-                        });
+                        newdataTasks[itemSts.sts][index]['duedt'] = new Date(date);
+
+                        setdataTasks(newdataTasks)
                       }}
                       dateFormat="MMMM dd"
-                      ref={datepickerRef} // Use ref instead of document.getElementById
-                      customInput={<></>} // Hide native input field
+                      ref={datepickerRef}
+                      customInput={<></>}
                     />
                   </div>
                 </div>
