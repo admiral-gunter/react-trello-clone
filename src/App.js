@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, createRef } from 'react';
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
@@ -105,9 +105,10 @@ function App() {
 
 
     const newdataTasks = { ...dataTasks };
+    const uiqid = generateUniqueID();
 
     newdataTasks[stsTask].push({
-      "id": generateUniqueID(),
+      "id": uiqid,
       "title": "",
       "ket": "",
       "duedt": new Date(),
@@ -141,6 +142,31 @@ function App() {
   const [taskHoveredIndex, setTaskHoveredIndex] = useState(null);
   const [delTaskIdx, setDelTaskIdx] = useState(null);
   const [deletingTask, setDeletingTask] = useState(null);
+
+  const inputDtRef = useRef({
+    "TODO": dataTasks.TODO.map(() => createRef()),
+    "IN_PROGRESS": dataTasks.IN_PROGRESS.map(() => createRef()),
+    "DONE": dataTasks.DONE.map(() => createRef()),
+    "BACKLOG": dataTasks.BACKLOG.map(() => createRef()),
+  })
+
+  // function addingRefToTask() {
+
+  //   for (let i = 0; i < statusTasks.length; i++) {
+  //     const item = statusTasks[i]['sts']
+  //     inputDtRef[item]
+
+  //   }
+
+  // }
+
+  // useEffect(() => {
+  //   addingRefToTask();
+  // }, []);
+
+
+  const [isOpen, setIsOpen] = useState({ 'sts': '', 'id': '' });
+
   return (
     <div className="App">
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -166,10 +192,10 @@ function App() {
                   style={TaskStyle}
                   draggable
                   onDragStart={(e) => handleDragStart(e, item, itemSts.sts, index)}
-                  onMouseEnter={() => setTaskHoveredIndex(index)}
+                  onMouseEnter={() => setTaskHoveredIndex(item.id)}
                   onMouseLeave={() => setTaskHoveredIndex(null)}
                 >
-                  {taskHoveredIndex === index && (
+                  {taskHoveredIndex === item.id && (
                     <span
                       onMouseEnter={() => setDelTaskIdx(index)}
                       onMouseLeave={() => setDelTaskIdx(null)} style={{ zIndex: '2', position: 'absolute', right: 5, top: 0 }}
@@ -195,11 +221,12 @@ function App() {
                       <span style={{ fontSize: 'small', fontWeight: 'bold', color: 'red', cursor: 'pointer', fontSize: delTaskIdx == index ? 'medium' : 'small' }}>Delete</span>
                     </span>
                   )}
-                  <input onChange={(e) => chgTitle(e.target.value, itemSts.sts, index)} value={item.title} />
+                  <div style={{ marginTop: '5%' }}></div>
+                  <input className='form-control' onChange={(e) => chgTitle(e.target.value, itemSts.sts, index)} value={item.title} />
 
                   <div>
                     <span
-                      onClick={() => datepickerRef.current.setOpen(true)}
+                      onClick={() => setIsOpen({ 'sts': itemSts.sts, 'id': index })}
                       style={{ cursor: "pointer", textDecoration: "underline" }}
                     >
                       {format(item.duedt, "MMMM dd")}
@@ -212,10 +239,13 @@ function App() {
 
                         newdataTasks[itemSts.sts][index]['duedt'] = new Date(date);
 
-                        setdataTasks(newdataTasks)
+                        setdataTasks(newdataTasks);
+                        setIsOpen({});
                       }}
                       dateFormat="MMMM dd"
-                      ref={datepickerRef}
+                      // ref={datepickerRef}
+                      open={isOpen.sts == itemSts.sts && isOpen.id == index ? true : false}
+                      onClickOutside={() => setIsOpen({})}
                       customInput={<></>}
                     />
                   </div>
@@ -230,7 +260,7 @@ function App() {
           })
         }
       </div>
-    </div>
+    </div >
   );
 }
 
