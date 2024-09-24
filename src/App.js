@@ -187,7 +187,7 @@ function App() {
               {dataTasks[itemSts.sts].map((item, index) => (
 
                 <div
-                  className={deletingTask === index ? 'fade-out' : 'fade-in'}
+                  className={deletingTask === item.id ? 'fade-out' : 'fade-in'}
                   key={index}
                   style={TaskStyle}
                   draggable
@@ -200,7 +200,7 @@ function App() {
                       onMouseEnter={() => setDelTaskIdx(index)}
                       onMouseLeave={() => setDelTaskIdx(null)} style={{ zIndex: '2', position: 'absolute', right: 5, top: 0 }}
                       onClick={(e) => {
-                        setDeletingTask(index);
+                        setDeletingTask(item.id);
 
 
                         setTimeout(() => {
