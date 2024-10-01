@@ -39,6 +39,8 @@ function App() {
 
   const [widthDrag, setWidthDrag] = useState();
 
+
+
   const handleDragStart = (e, element, stsTask, idxTask) => {
     // e.currentTarget.offsetWidth;
     setWidthDrag(e.currentTarget.offsetWidth);
@@ -157,13 +159,23 @@ function App() {
             onMouseEnter={() => setHoveredIndex(idxSts)}
             onMouseLeave={() => setHoveredIndex(null)}
           >
+
+            <div
+              style={{ fontWeight: 'bold', background: 'white', padding: '1% 0 1% 0', color: 'gray' }}
+            >
+              {itemSts.sts.replace('_', ' ')}
+            </div>
             {dataTasks[itemSts.sts].map((item, index) => (
               <div
                 className={deletingTask === item.id ? 'fade-out' : 'fade-in'}
                 key={index}
-                style={TaskStyle}
+                style={{ ...TaskStyle, display: isDragging == item.id ? 'none' : 'block' }}
                 draggable
                 onDragStart={(e) => handleDragStart(e, item, itemSts.sts, index)}
+                onDragEnd={(e) => {
+                  setIsDragging(null);
+                  setDraggedElement(null)
+                }}
                 onMouseEnter={() => setTaskHoveredIndex(item.id)}
                 onMouseLeave={() => setTaskHoveredIndex(null)}
               >
@@ -187,6 +199,8 @@ function App() {
                 <div style={{ marginTop: '5%' }}></div>
                 <input className='form-control' onChange={(e) => chgTitle(e.target.value, itemSts.sts, index)} value={item.title} />
                 <div>
+                  <span style={{ color: 'gray' }}>Due  </span>
+
                   <span
                     onClick={() => setIsOpen({ 'sts': itemSts.sts, 'id': index })}
                     style={{ cursor: "pointer", fontSize: 'medium', fontWeight: '600', color: 'blue' }}
@@ -215,8 +229,9 @@ function App() {
           </div>
         ))}
 
-        {isDragging && (
+        {(isDragging != null && draggedElement != null) && (
           <div
+            id="draggingDiv"
             style={{
               width: widthDrag,
               position: 'absolute',
@@ -226,12 +241,11 @@ function App() {
               zIndex: 1000,
               background: 'white',
               padding: '10px',
-              borderRadius: '5px',
               boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
               margin: '15px',
             }}
           >
-            {draggedElement ? <><input className='form-control' value={draggedElement.title} /> <span
+            {draggedElement ? <>  <div style={{ marginTop: '5%' }}></div> <input className='form-control' value={draggedElement.title} /> <span
 
               style={{ cursor: "pointer", fontSize: 'medium', fontWeight: '600', color: 'blue' }}
             >
