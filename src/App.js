@@ -150,21 +150,6 @@ function App() {
     "BACKLOG": dataTasks.BACKLOG.map(() => createRef()),
   })
 
-  // function addingRefToTask() {
-
-  //   for (let i = 0; i < statusTasks.length; i++) {
-  //     const item = statusTasks[i]['sts']
-  //     inputDtRef[item]
-
-  //   }
-
-  // }
-
-  // useEffect(() => {
-  //   addingRefToTask();
-  // }, []);
-
-
   const [isOpen, setIsOpen] = useState({ 'sts': '', 'id': '' });
 
   return (
@@ -227,12 +212,13 @@ function App() {
                   <div>
                     <span
                       onClick={() => setIsOpen({ 'sts': itemSts.sts, 'id': index })}
-                      style={{ cursor: "pointer", textDecoration: "underline" }}
+                      style={{ cursor: "pointer", fontSize: 'medium', fontWeight: '600', color: 'blue' }}
                     >
                       {format(item.duedt, "MMMM dd")}
                     </span>
 
                     <DatePicker
+
                       selected={item.duedt}
                       onChange={(date) => {
                         const newdataTasks = { ...dataTasks };
