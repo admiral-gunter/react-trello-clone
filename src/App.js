@@ -169,7 +169,7 @@ function App() {
               <div
                 className={deletingTask === item.id ? 'fade-out' : 'fade-in'}
                 key={index}
-                style={{ ...TaskStyle, display: isDragging == item.id ? 'none' : 'block' }}
+                style={{ ...TaskStyle, display: draggedElement?.id == item.id ? 'none' : 'block' }}
                 draggable
                 onDragStart={(e) => handleDragStart(e, item, itemSts.sts, index)}
                 onDragEnd={(e) => {
